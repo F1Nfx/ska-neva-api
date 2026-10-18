@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Team {
+  id         Int      @id @default(autoincrement())
+  name       String
+  city       String
+  shortName  String
+  color      String
+  logoUrl    String?
+  isOurTeam  Boolean  @default(false)
+  
+  players    Player[]
+  staff      Staff[]
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+  standings  Standing[]
+  matchEvents MatchEvent[]
+  matchStats MatchStats[]
+}
+
+model Player {
+  id          Int      @id @default(autoincrement())
+  teamId      Int
+  number      Int
+  name        String
+  position    String
+  age         Int
+  height      Int
+  weight      Int
+  foot        String
+  birthplace  String
+  joinedAt    String
+  isCaptain   Boolean  @default(false)
+  bio         String
+  portraitUrl String?
+  fullUrl     String?
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  stats       PlayerStat[]
+}
+
+model PlayerStat {
+  id          Int    @id @default(autoincrement())
+  playerId    Int
+  season      String
+  matches     Int
+  goals       Int
+  assists     Int
+  yellowCards Int
+  redCards    Int
+
+  player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+}
+
+model Staff {
+  id       Int    @id @default(autoincrement())
+  teamId   Int
+  name     String
+  role     String
+  age      Int
+  initials String
+  photoUrl String?
+
+  team     Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Match {
+  id          Int      @id @default(autoincrement())
+  tour        Int
+  tournament  String
+  dateStr     String
+  time        String
+  stadium     String
+  homeTeamId  Int
+  awayTeamId  Int
+  homeScore   Int?
+  awayScore   Int?
+  status      String
+
+  homeTeam    Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  events      MatchEvent[]
+  stats       MatchStats[]
+}
+
+model MatchEvent {
+  id         Int    @id @default(autoincrement())
+  matchId    Int
+  minute     Int
+  type       String
+  teamId     Int
+  playerName String
+  note       String?
+
+  match      Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team       Team   @relation(fields: [teamId], references: [id])
+}
+
+model MatchStats {
+  id            Int    @id @default(autoincrement())
+  matchId       Int
+  teamId        Int
+  possession    Int
+  shots         Int
+  shotsOnTarget Int
+  corners       Int
+  fouls         Int
+  yellowCards   Int
+
+  match         Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team          Team   @relation(fields: [teamId], references: [id])
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  tag       String
+  title     String
+  excerpt   String
+  dateStr   String
+  author    String
+  gradient  String
+  icon      String
+  content   String[]
+}
+
+model Standing {
+  id           Int    @id @default(autoincrement())
+  teamId       Int
+  season       String
+  position     Int
+  played       Int
+  wins         Int
+  draws        Int
+  losses       Int
+  goalsFor     Int
+  goalsAgainst Int
+  points       Int
+
+  team         Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}

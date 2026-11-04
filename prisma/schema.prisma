@@ -82,12 +82,14 @@ model Match {
   homeScore   Int?
   awayScore   Int?
   status      String
-
+  isFeatured  Boolean @default(false)
   homeTeam    Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
   awayTeam    Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
   events      MatchEvent[]
   stats       MatchStats[]
 }
+
+
 
 model MatchEvent {
   id         Int    @id @default(autoincrement())
@@ -143,4 +145,9 @@ model Standing {
   points       Int
 
   team         Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+model Admin {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
 }

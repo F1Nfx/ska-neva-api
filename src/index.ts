@@ -10,7 +10,10 @@ import jwt from 'jsonwebtoken'
 dotenv.config()
 
 // Настраиваем подключение к базе данных (Prisma 7)
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // <--- ВОТ ЭТА МАГИЯ
+})
 export const prisma = new PrismaClient({ adapter })
 
 const app = express()
